@@ -145,4 +145,16 @@ describe("GET /api/channel", () => {
     expect(res.status).toBe(500);
     expect(body.error).toBe("YouTube API error: quotaExceeded");
   });
+
+  // 7. Returns 500 with 'Unknown error' for non-Error throws
+  it("returns 500 with 'Unknown error' for non-Error throws", async () => {
+    mockFetchChannelData.mockRejectedValueOnce("string error");
+
+    const req = makeRequest("http://localhost:3000/api/channel?q=@TestChannel");
+    const res = await GET(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(500);
+    expect(body.error).toBe("Unknown error");
+  });
 });

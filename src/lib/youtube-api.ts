@@ -186,6 +186,7 @@ export async function fetchChannelData(
 
     const plItems: VideoItem[] = (plVideosRes.items ?? []).map((v) => {
       const totalSeconds = parseDuration(v.contentDetails.duration);
+      /* istanbul ignore next -- plItemsRes.items already guarded on line 173 */
       const matchingItem = (plItemsRes.items ?? []).find(
         (pi) => pi.contentDetails.videoId === v.id
       );

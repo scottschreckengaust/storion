@@ -109,4 +109,20 @@ describe("VideoSidebar", () => {
     );
     expect(screen.getByText("No videos found")).toBeInTheDocument();
   });
+
+  it("shows content when only playlists have items", () => {
+    const playlistOnlyData: ChannelData = {
+      channel: { title: "Playlist Channel", thumbnail: "" },
+      videos: [],
+      shorts: [],
+      playlists: [{
+        title: "Only Playlist",
+        playlistId: "PLonly",
+        items: [{ videoId: "plvid1", title: "PL Vid", publishedAt: "2026-03-01T00:00:00Z", duration: "PT5M", type: "video" }],
+      }],
+    };
+    render(<VideoSidebar channelData={playlistOnlyData} currentVideoId="" onSelect={jest.fn()} />);
+    expect(screen.queryByText("No videos found")).not.toBeInTheDocument();
+    expect(screen.getByText("Only Playlist (1)")).toBeInTheDocument();
+  });
 });

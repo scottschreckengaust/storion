@@ -57,6 +57,7 @@ export default function Home() {
   const handleSelect = useCallback(
     (videoId: string) => {
       const idx = queue.findIndex((v) => v.videoId === videoId);
+      /* istanbul ignore next -- defensive guard: sidebar only provides valid IDs */
       if (idx >= 0) setCurrentIndex(idx);
     },
     [queue]

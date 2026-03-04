@@ -166,4 +166,97 @@ describe("Home page", () => {
     expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Prev" })).not.toBeDisabled();
   });
+
+  it("shows error on network failure", async () => {
+    const user = userEvent.setup();
+    mockFetch.mockRejectedValueOnce(new Error("Network error"));
+
+    render(<Home />);
+    await user.type(
+      screen.getByPlaceholderText("Paste a YouTube channel URL or @handle"),
+      "@TestChannel"
+    );
+    await user.click(screen.getByRole("button", { name: "Load" }));
+
+    expect(await screen.findByText("Failed to fetch channel data")).toBeInTheDocument();
+  });
+
+  it("shows fallback error when API returns no error field", async () => {
+    const user = userEvent.setup();
+    mockFetch.mockResolvedValueOnce({ ok: false, json: async () => ({}) });
+
+    render(<Home />);
+    await user.type(
+      screen.getByPlaceholderText("Paste a YouTube channel URL or @handle"),
+      "@TestChannel"
+    );
+    await user.click(screen.getByRole("button", { name: "Load" }));
+
+    expect(await screen.findByText("Failed to fetch channel data")).toBeInTheDocument();
+  });
+
+  it("includes playlist items in the queue", async () => {
+    const user = userEvent.setup();
+    const dataWithPlaylist = {
+      ...mockChannelData,
+      playlists: [{
+        title: "My Playlist",
+        playlistId: "PLtest1",
+        items: [{ videoId: "plvid1", title: "Playlist Vid", publishedAt: "2026-03-01T00:00:00Z", duration: "PT8M", type: "video" }],
+      }],
+    };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => dataWithPlaylist });
+
+    render(<Home />);
+    await user.type(
+      screen.getByPlaceholderText("Paste a YouTube channel URL or @handle"),
+      "@TestChannel"
+    );
+    await user.click(screen.getByRole("button", { name: "Load" }));
+
+    await screen.findByText("Test Channel");
+    // Queue should be: vid1, vid2, short1, plvid1 = 4 total
+    expect(screen.getByText("1 / 4")).toBeInTheDocument();
+  });
+
+  it("handles channel data with empty queue", async () => {
+    const user = userEvent.setup();
+    const emptyData = {
+      channel: { title: "Empty Channel", thumbnail: "https://thumb.jpg" },
+      videos: [],
+      shorts: [],
+      playlists: [],
+    };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => emptyData });
+
+    render(<Home />);
+    await user.type(
+      screen.getByPlaceholderText("Paste a YouTube channel URL or @handle"),
+      "@EmptyChannel"
+    );
+    await user.click(screen.getByRole("button", { name: "Load" }));
+
+    await screen.findByText("Empty Channel");
+    // No player should be rendered since there are no videos
+    expect(screen.queryByTestId("youtube-player")).not.toBeInTheDocument();
+  });
+
+  it("jumps to video when sidebar item is clicked", async () => {
+    const user = userEvent.setup();
+    mockFetch.mockResolvedValueOnce({ ok: true, json: async () => mockChannelData });
+
+    render(<Home />);
+    await user.type(
+      screen.getByPlaceholderText("Paste a YouTube channel URL or @handle"),
+      "@TestChannel"
+    );
+    await user.click(screen.getByRole("button", { name: "Load" }));
+
+    await screen.findByText("Test Channel");
+    expect(screen.getByText("1 / 3")).toBeInTheDocument();
+
+    // Click "Short One" in sidebar (index 2 in queue: vid1, vid2, short1)
+    await user.click(screen.getByText("Short One"));
+    expect(screen.getByText("3 / 3")).toBeInTheDocument();
+  });
 });
