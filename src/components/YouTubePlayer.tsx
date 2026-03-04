@@ -5,11 +5,12 @@ import YouTube, { YouTubeEvent } from "react-youtube";
 
 interface YouTubePlayerProps {
   videoId: string;
+  onEnded?: () => void;
 }
 
 type PlayerState = "unstarted" | "buffering" | "playing" | "paused" | "ended" | "error";
 
-export default function YouTubePlayer({ videoId }: YouTubePlayerProps) {
+export default function YouTubePlayer({ videoId, onEnded }: YouTubePlayerProps) {
   const [isMuted, setIsMuted] = useState(true);
   const [playerState, setPlayerState] = useState<PlayerState>("unstarted");
   const [player, setPlayer] = useState<YT.Player | null>(null);
@@ -27,8 +28,12 @@ export default function YouTubePlayer({ videoId }: YouTubePlayerProps) {
       [YT.PlayerState.PAUSED]: "paused",
       [YT.PlayerState.ENDED]: "ended",
     };
-    setPlayerState(stateMap[event.data] ?? "unstarted");
-  }, []);
+    const newState = stateMap[event.data] ?? "unstarted";
+    setPlayerState(newState);
+    if (newState === "ended") {
+      onEnded?.();
+    }
+  }, [onEnded]);
 
   const onError = useCallback(() => {
     setPlayerState("error");

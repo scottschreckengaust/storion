@@ -175,4 +175,23 @@ describe("YouTubePlayer", () => {
     await user.click(screen.getByRole("button", { name: "Unmute" }));
     expect(mockPlayer.unMute).not.toHaveBeenCalled();
   });
+
+  it("calls onEnded when video ends", () => {
+    const onEnded = jest.fn();
+    render(<YouTubePlayer videoId="dQw4w9WgXcQ" onEnded={onEnded} />);
+    const onStateChange = getLastProps().onStateChange as (event: { data: number }) => void;
+    act(() => {
+      onStateChange({ data: 0 }); // ENDED state
+    });
+    expect(onEnded).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not crash when onEnded is not provided and video ends", () => {
+    render(<YouTubePlayer videoId="dQw4w9WgXcQ" />);
+    const onStateChange = getLastProps().onStateChange as (event: { data: number }) => void;
+    act(() => {
+      onStateChange({ data: 0 });
+    });
+    expect(screen.getByText("ended")).toBeInTheDocument();
+  });
 });
