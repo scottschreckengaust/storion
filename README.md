@@ -62,6 +62,41 @@ Supported channel URL formats:
 - Click any item in the sidebar to jump to it.
 - Play order: Videos (newest first) > Shorts (newest first) > Playlist items.
 
+## Headless Browser Authentication
+
+If you're running Storion with a headless browser (e.g., Playwright MCP) and YouTube shows "Sign in to confirm you're not a bot", you can copy an authenticated Chrome profile from a machine with a GUI.
+
+**On your machine with a GUI:**
+
+```bash
+# Launch Chrome with a dedicated profile
+google-chrome --user-data-dir=/tmp/playwright-chrome-data
+```
+
+On macOS use:
+
+```bash
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --user-data-dir=/tmp/playwright-chrome-data
+```
+
+1. Navigate to https://youtube.com and sign in to your Google account
+2. Verify you're signed in (you should see your avatar in the top-right)
+3. Close Chrome completely
+
+**Copy to your remote machine:**
+
+```bash
+rsync -az /tmp/playwright-chrome-data/ your-host:~/.playwright-chrome-data/
+```
+
+Or if using scp:
+
+```bash
+scp -r /tmp/playwright-chrome-data your-host:~/.playwright-chrome-data
+```
+
+The Playwright MCP config already uses `--user-data-dir $HOME/.playwright-chrome-data`, so once copied, the headless browser will have your YouTube session cookies and the "Sign in to confirm you're not a bot" message should go away.
+
 ## Tech Stack
 
 - [Next.js](https://nextjs.org) (App Router, TypeScript)
