@@ -117,8 +117,8 @@ export async function fetchChannelData(
   }
 
   // --- 4. Fetch video details (durations) for recent uploads ---
-  let videos: VideoItem[] = [];
-  let shorts: VideoItem[] = [];
+  const videos: VideoItem[] = [];
+  const shorts: VideoItem[] = [];
 
   if (recentItems.length > 0) {
     const videoIds = recentItems.map((item) => item.contentDetails.videoId);

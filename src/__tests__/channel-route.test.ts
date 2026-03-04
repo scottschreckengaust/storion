@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 // Mock next/server before any imports that depend on it.
 // In the jsdom test environment, the native Response constructor may not
