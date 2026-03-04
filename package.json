@@ -1,12 +1,24 @@
 {
-  "name": "storion-init",
+  "name": "storion",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "audit": "npm audit",
+    "security": "npm run audit && npm run security:gitleaks && npm run security:semgrep && npm run security:trivy && npm run security:grype && npm run security:checkov && npm run security:bandit",
+    "security:gitleaks": "gitleaks detect --source . -v",
+    "security:semgrep": "semgrep scan --config auto --exclude node_modules --exclude .next",
+    "security:trivy": "trivy fs --scanners vuln,secret,misconfig .",
+    "security:grype": "grype dir:.",
+    "security:checkov": "checkov -d . --framework secrets --quiet",
+    "security:bandit": "bandit -r src/ || true",
+    "check": "npm run lint && npm run typecheck && npm run test:coverage && npm run security"
   },
   "dependencies": {
     "next": "16.1.6",
@@ -15,14 +27,22 @@
     "react-youtube": "^10.1.0"
   },
   "devDependencies": {
+    "@jest/types": "^30.2.0",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/youtube": "^0.1.2",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
     "tailwindcss": "^4",
+    "ts-jest": "^29.4.6",
     "typescript": "^5"
   }
 }

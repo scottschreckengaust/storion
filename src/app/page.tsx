@@ -13,7 +13,7 @@ export default function Home() {
         Storion
       </h1>
       <VideoInput onVideoId={setVideoId} />
-      {videoId && <YouTubePlayer videoId={videoId} />}
+      {videoId && <YouTubePlayer key={videoId} videoId={videoId} />}
     </div>
   );
 }

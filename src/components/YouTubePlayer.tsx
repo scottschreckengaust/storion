@@ -34,20 +34,17 @@ export default function YouTubePlayer({ videoId }: YouTubePlayerProps) {
     setPlayerState("error");
   }, []);
 
-  const handleUnmute = useCallback(() => {
-    if (player) {
+  const handleToggleMute = useCallback(() => {
+    if (!player) return;
+    if (isMuted) {
       player.unMute();
       player.setVolume(100);
       setIsMuted(false);
-    }
-  }, [player]);
-
-  const handleMute = useCallback(() => {
-    if (player) {
+    } else {
       player.mute();
       setIsMuted(true);
     }
-  }, [player]);
+  }, [player, isMuted]);
 
   return (
     <div className="relative w-full max-w-3xl">
@@ -72,7 +69,7 @@ export default function YouTubePlayer({ videoId }: YouTubePlayerProps) {
       <div className="mt-3 flex items-center justify-between">
         <span className="text-sm text-zinc-500 capitalize">{playerState}</span>
         <button
-          onClick={isMuted ? handleUnmute : handleMute}
+          onClick={handleToggleMute}
           className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
         >
           {isMuted ? "Unmute" : "Mute"}
