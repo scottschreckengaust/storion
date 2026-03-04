@@ -14,7 +14,13 @@ Channel-based YouTube video player built with Next.js. Enter a YouTube channel a
 6. Click **Create Credentials > API Key**
 7. Copy the key
 
-Optional: Restrict the key to only the YouTube Data API v3 under **API restrictions**.
+### API Key Best Practices
+
+1. **Restrict your API key** — In Google Cloud Console, restrict the key to only the YouTube Data API v3 under **API restrictions**, and consider adding HTTP referrer or IP restrictions.
+2. **Delete unneeded API keys** to minimize exposure to attacks.
+3. **Rotate keys periodically** — Delete and recreate your API keys on a regular schedule.
+4. **Never include API keys in client code or commit them to repositories** — Use `.env.local` (git-ignored) for local development and environment variables in production.
+5. **Implement monitoring and logging** — Enable API key usage monitoring in Google Cloud Console to detect unauthorized use.
 
 ## Getting Started
 
